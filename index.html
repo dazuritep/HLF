@@ -85,7 +85,7 @@
   ];
 
   // 포럼 글 (영상 올리려면 한 줄 복사해서 추가)
-  // link에 유튜브 주소를 넣으면 영상이 바로 재생돼요. 없으면 "" 로 두세요.
+  // link에 유튜브 주소를 넣으면 영상이 바로 재생되고 없으면 "" 로 두면 됨.
   const posts = [
     { date: "YYYY-MM-DD / APM N:NN ", title: "Untitled", text: "The Text.", link: "" },
     { date: "2026-11-21 / PM 8:00 ", title: "Hsiaaal's From Opened", text: "올리고 싶은거 올립니다.", link: "" },
@@ -115,7 +115,7 @@
     levels: () => `<h1>📋 내 레벨</h1>` + levels.map(l => `
       <div class="card">
         <h3>${l.name}</h3>
-        <span class="tag">ID: ${l.id}</span><span class="tag">${l.difficulty}</span><span class="tag">점수 ${l.score}</span>
+        <span class="tag">ID: ${l.id}</span><span class="tag">${l.difficulty}</span><span class="tag">레이팅 ${l.score}</span>
         ${l.note ? `<div class="muted">${l.note}</div>` : ""}
       </div>`).join(""),
 
