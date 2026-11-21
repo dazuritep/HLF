@@ -1,2 +1,50 @@
-<h1>HLF</h1>
-<p>안녕하세요!</p>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HLF - 내 레벨 순위</title>
+<style>
+  body { margin:0; font-family:sans-serif; background:#111827; color:#f3f4f6; }
+  main { max-width:700px; margin:0 auto; padding:32px 16px; }
+  h1 { text-align:center; }
+  .sub { text-align:center; color:#9ca3af; margin-bottom:24px; }
+  .card { display:flex; align-items:center; gap:16px; background:#1f2937;
+          border-radius:12px; padding:14px 18px; margin-bottom:10px; }
+  .rank { font-size:24px; font-weight:bold; width:40px; text-align:center; color:#fbbf24; }
+  .info { flex:1; }
+  .name { font-size:18px; font-weight:bold; }
+  .meta { font-size:13px; color:#9ca3af; margin-top:4px; }
+  .score { font-size:20px; font-weight:bold; color:#34d399; }
+</style>
+</head>
+<body>
+<main>
+  <h1>🏆 내 레벨 순위</h1>
+  <p class="sub">The Hsiaaal Level Form</p>
+  <div id="list"></div>
+</main>
+
+<script>
+  // ▼ 여기만 고치면 돼요. 레벨 하나당 한 줄이에요.
+  // 점수(score)가 높은 순서로 자동 정렬돼요.
+  const levels = [
+    { name: "첫 번째 레벨", id: "00000001", difficulty: "Hard",   score: 8.5, note: "처음 만든 레벨" },
+    { name: "두 번째 레벨", id: "00000002", difficulty: "Insane", score: 9.2, note: "제일 어려움" },
+    { name: "세 번째 레벨", id: "00000003", difficulty: "Normal", score: 7.0, note: "" }
+  ];
+
+  levels.sort((a, b) => b.score - a.score);
+
+  document.getElementById("list").innerHTML = levels.map((l, i) => `
+    <div class="card">
+      <div class="rank">${i + 1}</div>
+      <div class="info">
+        <div class="name">${l.name}</div>
+        <div class="meta">ID: ${l.id} · ${l.difficulty}${l.note ? " · " + l.note : ""}</div>
+      </div>
+      <div class="score">${l.score}</div>
+    </div>`).join("");
+</script>
+</body>
+</html>
