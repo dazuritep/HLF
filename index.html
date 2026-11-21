@@ -69,26 +69,27 @@
 
   // 내 지메 스탯 ["이름", 값]
   const stats = [
-    ["⭐ 스타", 0],
-    ["🌙 문", 0],
-    ["👿 데몬", 0],
-    ["🪙 유저 코인", 0],
-    ["🔑 시크릿 코인", 0],
-    ["🛠️ 크리에이터 포인트", 0]
+    ["별 갯수", 54],
+    ["달 갯수", 10],
+    ["데몬 클리어 갯수", 3],
+    ["유저 코인", 6],
+    ["지메 시크릿 코인", 6],
+    ["크포", 0]
   ];
 
   // 내 레벨 (점수 높은 순으로 순위 자동 계산)
   const levels = [
-    { name: "첫 번째 레벨", id: "00000001", difficulty: "Hard",   score: 8.5, note: "처음 만든 레벨" },
-    { name: "두 번째 레벨", id: "00000002", difficulty: "Insane", score: 9.2, note: "제일 어려움" },
-    { name: "세 번째 레벨", id: "00000003", difficulty: "Normal", score: 7.0, note: "" }
+    { name: "만든게없어요ㅜㅜ", id: "12345678", difficulty: "Extreme Demon",   score: 8.5, note: "졤트리" },
+    { name: "만든게없어요ㅜㅜ", id: "12345678", difficulty: "Extreme Demon", score: 9.2, note: "졤트리" },
+    { name: "만든게없어요ㅜㅜ", id: "12345678", difficulty: "Extreme Demon", score: 7.0, note: "엄엄" }
   ];
 
   // 포럼 글 (영상 올리려면 한 줄 복사해서 추가)
   // link에 유튜브 주소를 넣으면 영상이 바로 재생돼요. 없으면 "" 로 두세요.
   const posts = [
-    { date: "2026-11-21", title: "HLF 포럼 오픈", text: "여기에 영상이랑 글을 올려요.", link: "" },
-    { date: "2026-11-22", title: "첫 번째 레벨 클리어 영상", text: "도전해보세요!", link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+    { date: "YYYY-MM-DD / APM N:NN ", title: "Untitled", text: "The Text.", link: "" },
+    { date: "2026-11-21 / PM 8:00 ", title: "Hsiaaal's From Opened", text: "올리고 싶은거 올립니다.", link: "" },
+    { date: "2026-11-21 / PM 8:25 ", title: "Kuzureta FWC", text: "쿠주레타 프레임 윈도우 카운터", link: "https://youtu.be/eUlzLTjPEVs" },
   ];
 
   // ▲▲▲ 여기까지 ▲▲▲
@@ -111,7 +112,7 @@
   }
 
   const views = {
-    levels: () => `<h1>📋 내 레벨</h1>` + sorted.map(l => `
+    levels: () => `<h1>📋 내 레벨</h1>` + levels.map(l => `
       <div class="card">
         <h3>${l.name}</h3>
         <span class="tag">ID: ${l.id}</span><span class="tag">${l.difficulty}</span><span class="tag">점수 ${l.score}</span>
@@ -119,7 +120,7 @@
       </div>`).join(""),
 
     rank: () => `<h1>🏆 순위</h1>
-      <table><thead><tr><th>#</th><th>레벨</th><th>난이도</th><th>점수</th></tr></thead><tbody>
+      <table><thead><tr><th>#</th><th>레벨</th><th>난이도</th><th>레이팅</th></tr></thead><tbody>
       ${sorted.map((l, i) => `<tr><td>${i + 1}</td><td>${l.name}</td><td>${l.difficulty}</td><td class="sc">${l.score}</td></tr>`).join("")}
       </tbody></table>`,
 
