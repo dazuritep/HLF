@@ -3,48 +3,148 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HLF - 내 레벨 순위</title>
+<title>HLF</title>
 <style>
-  body { margin:0; font-family:sans-serif; background:#111827; color:#f3f4f6; }
-  main { max-width:700px; margin:0 auto; padding:32px 16px; }
-  h1 { text-align:center; }
-  .sub { text-align:center; color:#9ca3af; margin-bottom:24px; }
-  .card { display:flex; align-items:center; gap:16px; background:#1f2937;
-          border-radius:12px; padding:14px 18px; margin-bottom:10px; }
-  .rank { font-size:24px; font-weight:bold; width:40px; text-align:center; color:#fbbf24; }
-  .info { flex:1; }
-  .name { font-size:18px; font-weight:bold; }
-  .meta { font-size:13px; color:#9ca3af; margin-top:4px; }
-  .score { font-size:20px; font-weight:bold; color:#34d399; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:sans-serif; background:#111827; color:#f3f4f6; display:flex; min-height:100vh; }
+
+  aside { width:250px; background:#1f2937; padding:24px 16px; position:sticky; top:0; height:100vh; flex-shrink:0; }
+  .profile { text-align:center; margin-bottom:24px; }
+  .icon { width:96px; height:96px; border-radius:16px; object-fit:cover; background:#374151; }
+  .icon-fallback { width:96px; height:96px; border-radius:16px; background:#374151; font-size:48px;
+                   display:none; align-items:center; justify-content:center; margin:0 auto; }
+  .profile h2 { margin:10px 0 2px; }
+  .profile p { margin:0; color:#9ca3af; font-size:13px; }
+  nav button { display:block; width:100%; text-align:left; background:none; border:none; color:#d1d5db;
+               font-size:16px; padding:12px 14px; border-radius:10px; cursor:pointer; margin-bottom:4px; }
+  nav button:hover { background:#374151; }
+  nav button.active { background:#4b5563; color:#fff; font-weight:bold; }
+
+  main { flex:1; padding:32px; max-width:860px; }
+  h1 { margin-top:0; }
+  .card { background:#1f2937; border-radius:12px; padding:16px 20px; margin-bottom:12px; }
+  .card h3 { margin:0 0 6px; }
+  .tag { display:inline-block; background:#374151; padding:3px 10px; border-radius:20px; font-size:13px; margin:0 6px 6px 0; }
+  .muted { color:#9ca3af; font-size:13px; }
+  a { color:#60a5fa; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { text-align:left; padding:10px 8px; border-bottom:1px solid #374151; }
+  th { color:#9ca3af; font-size:13px; }
+  .sc { color:#34d399; font-weight:bold; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
+  .stat { background:#1f2937; border-radius:12px; padding:18px; text-align:center; }
+  .stat b { display:block; font-size:28px; color:#34d399; margin-top:6px; }
+  .video { position:relative; padding-top:56.25%; margin-top:10px; }
+  .video iframe { position:absolute; inset:0; width:100%; height:100%; border:0; border-radius:10px; }
+
+  @media (max-width:700px) {
+    body { flex-direction:column; }
+    aside { width:100%; height:auto; position:static; }
+    nav { display:flex; flex-wrap:wrap; gap:4px; }
+    nav button { width:auto; }
+    main { padding:18px; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>🏆 내 레벨 순위</h1>
-  <p class="sub">The Hsiaaal Level Form</p>
-  <div id="list"></div>
-</main>
+
+<aside>
+  <div class="profile">
+    <img class="icon" id="icon" src="icon.png" alt="icon"
+         onerror="this.style.display='none'; document.getElementById('fb').style.display='flex'">
+    <div class="icon-fallback" id="fb">🎮</div>
+    <h2 id="pname"></h2>
+    <p id="pdesc"></p>
+  </div>
+  <nav id="nav"></nav>
+</aside>
+
+<main id="content"></main>
 
 <script>
-  // ▼ 여기만 고치면 돼요. 레벨 하나당 한 줄이에요.
-  // 점수(score)가 높은 순서로 자동 정렬돼요.
+  // ▼▼▼ 여기만 고치면 돼요 ▼▼▼
+
+  const profile = { name: "dazuritep", desc: "The Hsiaaal Level Form" };
+
+  // 내 지메 스탯 ["이름", 값]
+  const stats = [
+    ["⭐ 스타", 0],
+    ["🌙 문", 0],
+    ["👿 데몬", 0],
+    ["🪙 유저 코인", 0],
+    ["🔑 시크릿 코인", 0],
+    ["🛠️ 크리에이터 포인트", 0]
+  ];
+
+  // 내 레벨 (점수 높은 순으로 순위 자동 계산)
   const levels = [
     { name: "첫 번째 레벨", id: "00000001", difficulty: "Hard",   score: 8.5, note: "처음 만든 레벨" },
     { name: "두 번째 레벨", id: "00000002", difficulty: "Insane", score: 9.2, note: "제일 어려움" },
     { name: "세 번째 레벨", id: "00000003", difficulty: "Normal", score: 7.0, note: "" }
   ];
 
-  levels.sort((a, b) => b.score - a.score);
+  // 포럼 글 (영상 올리려면 한 줄 복사해서 추가)
+  // link에 유튜브 주소를 넣으면 영상이 바로 재생돼요. 없으면 "" 로 두세요.
+  const posts = [
+    { date: "2026-11-21", title: "HLF 포럼 오픈", text: "여기에 영상이랑 글을 올려요.", link: "" },
+    { date: "2026-11-22", title: "첫 번째 레벨 클리어 영상", text: "도전해보세요!", link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+  ];
 
-  document.getElementById("list").innerHTML = levels.map((l, i) => `
-    <div class="card">
-      <div class="rank">${i + 1}</div>
-      <div class="info">
-        <div class="name">${l.name}</div>
-        <div class="meta">ID: ${l.id} · ${l.difficulty}${l.note ? " · " + l.note : ""}</div>
-      </div>
-      <div class="score">${l.score}</div>
-    </div>`).join("");
+  // ▲▲▲ 여기까지 ▲▲▲
+
+  const sorted = [...levels].sort((a, b) => b.score - a.score);
+  const menus = [
+    ["levels", "📋 내 레벨"],
+    ["rank", "🏆 순위"],
+    ["stats", "📊 내 스탯"],
+    ["forum", "💬 포럼"]
+  ];
+  let current = "levels";
+
+  document.getElementById("pname").textContent = profile.name;
+  document.getElementById("pdesc").textContent = profile.desc;
+
+  function ytId(url) {
+    const m = url.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  const views = {
+    levels: () => `<h1>📋 내 레벨</h1>` + sorted.map(l => `
+      <div class="card">
+        <h3>${l.name}</h3>
+        <span class="tag">ID: ${l.id}</span><span class="tag">${l.difficulty}</span><span class="tag">점수 ${l.score}</span>
+        ${l.note ? `<div class="muted">${l.note}</div>` : ""}
+      </div>`).join(""),
+
+    rank: () => `<h1>🏆 순위</h1>
+      <table><thead><tr><th>#</th><th>레벨</th><th>난이도</th><th>점수</th></tr></thead><tbody>
+      ${sorted.map((l, i) => `<tr><td>${i + 1}</td><td>${l.name}</td><td>${l.difficulty}</td><td class="sc">${l.score}</td></tr>`).join("")}
+      </tbody></table>`,
+
+    stats: () => `<h1>📊 내 스탯</h1><div class="grid">` +
+      stats.map(s => `<div class="stat">${s[0]}<b>${s[1]}</b></div>`).join("") + `</div>`,
+
+    forum: () => `<h1>💬 포럼</h1>` +
+      [...posts].sort((a, b) => b.date.localeCompare(a.date)).map(p => {
+        const id = p.link ? ytId(p.link) : null;
+        return `<div class="card">
+          <h3>${p.title}</h3>
+          <div class="muted">${p.date}</div>
+          <p>${p.text}</p>
+          ${id ? `<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${id}" allowfullscreen></iframe></div>`
+               : p.link ? `<a href="${p.link}" target="_blank">🔗 링크 열기</a>` : ""}
+        </div>`;
+      }).join("")
+  };
+
+  function go(key) {
+    current = key;
+    document.getElementById("nav").innerHTML = menus.map(m =>
+      `<button class="${m[0] === current ? "active" : ""}" onclick="go('${m[0]}')">${m[1]}</button>`).join("");
+    document.getElementById("content").innerHTML = views[key]();
+  }
+  go("levels");
 </script>
 </body>
 </html>
